@@ -16,7 +16,7 @@ setup(
     author='awk',
     author_email='awk@awk.space',
     version=version,
-    description='A tool to apply pure SQL migrations to PostgreSQL' +
+    description='A tool to apply pure SQL migrations to PostgreSQL ' +
                 'databases at runtime.',
     long_description=readme,
     long_description_content_type='text/markdown',
