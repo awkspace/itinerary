@@ -5,6 +5,7 @@ import os
 import psycopg2
 import time
 from psycopg2 import sql
+from psycopg2.extensions import cursor
 
 
 class Migration:
@@ -37,7 +38,7 @@ class Migration:
             self.release_lock()
 
     def acquire_lock(self):
-        with self.conn.cursor() as cur:
+        with self.conn.cursor(cursor_factory=cursor) as cur:
             while True:
                 try:
                     cur.execute(
@@ -52,13 +53,13 @@ class Migration:
                     time.sleep(1)
 
     def release_lock(self):
-        with self.conn.cursor() as cur:
+        with self.conn.cursor(cursor_factory=cursor) as cur:
             cur.execute(
                 "select pg_advisory_unlock(%s)", (self.config['lock_id'],))
             self.conn.commit()
 
     def get_db_version(self):
-        with self.conn.cursor() as cur:
+        with self.conn.cursor(cursor_factory=cursor) as cur:
             cur.execute(
                 sql.SQL("create table if not exists {} (version int)").format(
                     sql.Identifier(self.config['version_table'])))
@@ -105,7 +106,7 @@ class Migration:
             logging.getLogger('itinerary').info(
                 f'Applying migration: {migration["name"]}')
 
-            with self.conn.cursor() as cur:
+            with self.conn.cursor(cursor_factory=cursor) as cur:
                 try:
                     cur.execute(migration['sql'])
                     statement = sql.SQL("update {} set version = %s").format(
